@@ -1,17 +1,17 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { CheckCircle2, Loader2 } from "lucide-react"; // Added Loader2
+import { Suspense, useMemo, useState } from "react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import OfficeLocations from "@/components/OfficeLocations";
 import Newsletter from "@/components/NewsLetter";
-import { handleContactSubmission } from "@/lib/actions/contact"; // Import your action
+import { handleContactSubmission } from "@/lib/actions/contact";
 import { useSearchParams } from "next/navigation";
 import { servicesData } from "@/data/servicesData";
 import { SERVICE_GROUPS } from "@/data/serviceGroups";
 
-export default function ContactPage() {
+function ContactPageContent() {
   const searchParams = useSearchParams();
   const [phoneNumber, setPhoneNumber] = useState<string | undefined>();
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -46,6 +46,7 @@ export default function ContactPage() {
     const interestId = String(formData.get("interest") ?? "");
     const interestTitle =
       servicesData.find((s) => s.id === interestId)?.title || interestId;
+
     const data = {
       firstName: formData.get("firstName"),
       lastName: formData.get("lastName"),
@@ -60,6 +61,7 @@ export default function ContactPage() {
     const result = await handleContactSubmission(data);
 
     setIsPending(false);
+
     if (result.success) {
       setEmailNotice(result.emailSent ? null : result.emailNotice);
       setIsSubmitted(true);
@@ -67,15 +69,13 @@ export default function ContactPage() {
     } else {
       setSubmitError(
         result.error ??
-          "We could not send your message. Please try again in a moment.",
+          "We could not send your message. Please try again in a moment."
       );
     }
   };
 
   return (
     <main className="pt-24 min-h-screen bg-white">
-      
-      {/* 1. HERO SECTION */}
       <section className="bg-vision-dark text-white py-20 text-center relative overflow-hidden">
         <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
         <div className="container mx-auto px-6 relative z-10">
@@ -91,7 +91,6 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* 2. CONTACT SALES FORM */}
       <section className="container mx-auto px-6 py-16">
         <div className="max-w-5xl mx-auto bg-gray-50 rounded-3xl p-8 md:p-16 border border-gray-100 shadow-sm">
           <h2 className="text-3xl font-bold text-vision-dark mb-10">Contact Sales</h2>
@@ -131,7 +130,6 @@ export default function ContactPage() {
               ) : null}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Names */}
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-gray-700">First name <span className="text-red-500">*</span></label>
                   <input name="firstName" type="text" placeholder="Enter your first name" required className="w-full bg-transparent border-b border-gray-300 py-2 focus:border-vision-blue outline-none transition-colors" />
@@ -141,7 +139,6 @@ export default function ContactPage() {
                   <input name="lastName" type="text" placeholder="Enter your last name" required className="w-full bg-transparent border-b border-gray-300 py-2 focus:border-vision-blue outline-none transition-colors" />
                 </div>
 
-                {/* Email & Company */}
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-gray-700">Work email address <span className="text-red-500">*</span></label>
                   <input name="email" type="email" placeholder="Enter your work email address" required className="w-full bg-transparent border-b border-gray-300 py-2 focus:border-vision-blue outline-none transition-colors" />
@@ -152,7 +149,6 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* Country Selection */}
               <div className="space-y-2">
                 <label className="text-sm font-bold text-gray-700">Country <span className="text-red-500">*</span></label>
                 <select name="country" required defaultValue="" className="w-full bg-transparent border-b border-gray-300 py-2 focus:border-vision-blue outline-none">
@@ -164,7 +160,6 @@ export default function ContactPage() {
                 </select>
               </div>
 
-              {/* Phone Number Input */}
               <div className="space-y-2">
                 <label className="text-sm font-bold text-gray-700">Phone number <span className="text-red-500">*</span></label>
                 <div className="border-b border-gray-300 py-2 focus-within:border-vision-blue transition-colors">
@@ -179,7 +174,6 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* Product Interest */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-gray-700">Product/Service Interest <span className="text-red-500">*</span></label>
@@ -204,6 +198,7 @@ export default function ContactPage() {
                     ))}
                   </select>
                 </div>
+
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-gray-700">How did you hear about us? <span className="text-red-500">*</span></label>
                   <select name="source" required defaultValue="" className="w-full bg-transparent border-b border-gray-300 py-2 focus:border-vision-blue outline-none">
@@ -215,36 +210,46 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* Consent */}
               <div className="flex items-start gap-3 py-4">
                 <input type="checkbox" required className="mt-1 w-5 h-5 accent-vision-blue" />
                 <p className="text-sm text-gray-500">
                   By ticking this box, you consent to allow <strong>WebVision</strong> to contact you about products, services, and offers that may be of interest to you.{" "}
                   <a href="/privacy" className="text-vision-blue underline">
                     Privacy policy
-                  </a>
-                  .
+                  </a>.
                 </p>
               </div>
 
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={isPending}
                 className="px-12 py-3 bg-vision-blue text-white font-bold rounded-lg hover:bg-vision-purple transition-all shadow-md flex items-center gap-3 disabled:opacity-50"
               >
-                {isPending ? <><Loader2 className="animate-spin" size={18} /> Processing...</> : "Submit"}
+                {isPending ? (
+                  <>
+                    <Loader2 className="animate-spin" size={18} /> Processing...
+                  </>
+                ) : (
+                  "Submit"
+                )}
               </button>
             </form>
           )}
         </div>
       </section>
 
-      {/* 3. OFFICE LOCATIONS SECTION */}
       <OfficeLocations />
-
-      {/* 4. NEWSLETTER SECTION */}
       <Newsletter />
-      
     </main>
+  );
+}
+
+export const dynamic = "force-dynamic";
+
+export default function ContactPage() {
+  return (
+    <Suspense fallback={<main className="pt-24 min-h-screen bg-white" />}>
+      <ContactPageContent />
+    </Suspense>
   );
 }

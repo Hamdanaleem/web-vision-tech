@@ -51,15 +51,19 @@ export default function AdminPage() {
 
   const startEdit = (project: any) => {
     setEditingId(project._id);
+  
     const form = document.getElementById("project-form") as HTMLFormElement;
-    form.title.value = project.title;
-    form.category.value = project.category;
-    form.description.value = project.description;
-    form.tech.value = project.tech.join(", ");
-    form.link.value = project.link;
+  
+    const elements = form.elements as any;
+  
+    elements["title"].value = project.title;
+    elements["category"].value = project.category;
+    elements["description"].value = project.description;
+    elements["tech"].value = project.tech.join(", ");
+    elements["link"].value = project.link;
+  
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this project?")) {
       await deleteProject(id);
