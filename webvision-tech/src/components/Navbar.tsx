@@ -160,13 +160,6 @@ export default function Navbar() {
             </div>
             {/* ADDED PORTFOLIO MOBILE */}
             <Link 
-              href="/portfolio" 
-              className="block text-vision-dark hover:text-vision-blue font-medium transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Portfolio
-            </Link>
-            <Link 
               href="/contact" 
               className="block text-vision-dark hover:text-vision-blue font-medium transition-colors"
               onClick={() => setIsOpen(false)}
